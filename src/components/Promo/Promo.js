@@ -1,6 +1,6 @@
 import './Promo.css';
 import React from 'react';
-import textLogo from '../../images/text__logo.svg';
+import textLogo from '../../images/text__logo.png';
 
 function Promo() {
   return (

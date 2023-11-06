@@ -6,7 +6,7 @@
 .cards__list {
   display: grid;
   justify-content: center;
-  justify-items: start;
+  justify-items: center;
   grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
   gap: 23px 20px;
   margin: 0;
@@ -28,7 +28,7 @@
 .cards__button-container {
   max-width: 320px;
   margin: 0 auto;
-  padding: 45px 0 49px;
+  padding: 50px 0 49px;
 }
 
 .cards__button {
@@ -37,7 +37,7 @@
   outline: none;
   border: 1px solid #e8e8e8;
   border-radius: 6px;
-  background-color: white;
+  background-color: #F9F9F9;
   font-size: 12px;
   font-weight: 500;
   line-height: 15px;

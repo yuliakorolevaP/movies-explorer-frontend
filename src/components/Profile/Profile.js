@@ -28,9 +28,9 @@ const Profile = ({ user }) => {
   }
 
   return (
-    <section className="profile">
-      <form className="profile__form" >
-        <h3 className="profile__greeting">Привет, {user.name}!</h3>
+    <main className="profile">
+      <form name="profile" className="profile__form" >
+        <h1 className="profile__greeting">Привет, {user.name}!</h1>
         <div className="profile__inputs">
           <p className="profile__text">Имя</p>
           <div className="profile__area profile__area_type_name">
@@ -45,14 +45,22 @@ const Profile = ({ user }) => {
           </div>
           <p className="profile__text">E-mail</p>
         </div>
-        <button className="profile__button" disabled={!isVisibleButton}>
-          Редактировать
-        </button>
-        <Link to="/signin" className="profile__link">
-          Выйти из аккаунта
-        </Link>
+        {!isVisibleButton && (
+          <button className="profile__button">Редактировать
+          </button>
+        )}
+        {!isVisibleButton && (
+          <Link to="/signin" className="profile__link">
+            Выйти из аккаунта
+          </Link>
+        )}
+        {/* <button className="profile__button" disabled={!isVisibleButton}> */}
+        {isVisibleButton && (
+          <button className="profile__button profile__button_save">Сохранить
+          </button>
+        )}
       </form>
-    </section>
+    </main>
   );
 };
 

@@ -5,11 +5,12 @@ import MoviesCardList from '../MoviesCardList/MoviesCardList';
 const SavedMovies = ({ movies }) => {
 
   return (
-    <div className="saved-movies">
-      <SearchForm />
-      <MoviesCardList movies={movies} />
-
-    </div>
+    <main>
+      <div className="saved-movies">
+        <SearchForm />
+        <MoviesCardList movies={movies} />
+      </div>
+    </main>
   );
 };
 

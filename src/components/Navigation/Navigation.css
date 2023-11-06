@@ -7,7 +7,7 @@
   margin-left: auto;
   padding: 0;
   width: 40px;
-  height: 43px;
+  height: 38px;
   outline: none;
   border: none;
   background: transparent url('../../images/icon_menu.svg') center center / cover no-repeat;
@@ -69,6 +69,21 @@
   line-height: 18px;
   text-decoration: none;
   transition: opacity .2s linear;
+
+}
+
+.navigation__link:focus {
+  text-decoration: underline;
+  /* ИЗМЕНИТЬ */
+}
+
+.navigation__link_visible {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  text-decoration: none;
+  transition: opacity .2s linear;
 }
 
 .navigation__link:hover {
@@ -82,7 +97,7 @@
   background: #F9F9F9 url('../../images/icon_profile.svg') center center / 11px no-repeat;
   height: 25px;
   width: 25px;
-  border: 1px solid #000000;
+  border: none;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
@@ -101,6 +116,10 @@
 
 .navigation__link_type_profile_visible {
   background-color: #2BE080;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 12px;
+  color: #000000;
 }
 
 @media screen and (max-width: 800px) {
@@ -128,8 +147,9 @@
     min-height: 100vh;
     margin-left: auto;
     flex-direction: column;
-    padding: 27px 27px 90px;
+    padding: 29px 29px 90px;
     background-color: #fff;
+    height: 905px;
   }
 
   .navigation__list-container {
@@ -147,7 +167,8 @@
   }
 
   .navigation__list-item {
-    margin: 0 0 24px;
+    height: 22px;
+    margin: 0 0 28px;
   }
 
   .navigation__list-item_type_main {
@@ -155,7 +176,7 @@
   }
 
   .navigation__link {
-    padding: 0 0 4px;
+    padding: 0;
     font-size: 18px;
     font-weight: 500;
     line-height: 24px;

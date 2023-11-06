@@ -3,7 +3,7 @@ import './Portfolio.css';
 const Portfolio = () => {
   return (
     <section className="portfolio">
-      <h3 className="portfolio__header">Портфолио</h3>
+      <h2 className="portfolio__header">Портфолио</h2>
       <ul className="portfolio__list">
         <li className="portfolio__list-item">
           <a className="portfolio__link" href="https://github.com/yuliakorolevaP/how-to-learn" target="_blank" rel="noreferrer">

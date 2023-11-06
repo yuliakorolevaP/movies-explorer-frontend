@@ -5,6 +5,8 @@
 .card__image {
   width: 270px;
   height: 151px;
+  object-fit: contain;
+  object-position: 50% 50%;
 }
 
 .card__element {
@@ -20,6 +22,10 @@
   font-size: 13px;
   font-weight: 500;
   line-height: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 270px;
+  overflow: hidden;
 }
 
 .card__buttons {

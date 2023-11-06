@@ -15,14 +15,14 @@ const Navigation = () => {
           <div className="navigation__list-container">
             <button className="navigation__button-close" type="button" onClick={handleToggleMenu}></button>
             <ul className="navigation__list">
-              <li className="navigation__list-item navigation__list-item_type_main">
-                <Link to="/" className="navigation__link">Главная</Link>
+              <li className="navigation__list-item navigation__list-item_type_main ">
+                <Link to="/" className='navigation__link'>Главная</Link>
               </li>
               <li className="navigation__list-item">
-                <NavLink to="/movies" className="navigation__link">Фильмы</NavLink>
+                <NavLink to="/movies" className={`navigation__link ${pathname !== '/' ? '' : 'navigation__link_visible'}`}>Фильмы</NavLink>
               </li>
               <li className="navigation__list-item">
-                <NavLink to="/saved-movies" className="navigation__link">Сохранённые фильмы</NavLink>
+                <NavLink to="/saved-movies" className={`navigation__link ${pathname !== '/' ? '' : 'navigation__link_visible'}`}>Сохранённые фильмы</NavLink>
               </li>
             </ul>
           </div>

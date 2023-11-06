@@ -1,4 +1,3 @@
-/* eslint-disable eqeqeq */
 import './MoviesCard.css';
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -22,7 +21,7 @@ const MoviesCard = ({ movie }) => {
           alt={`Заставка для фильма "${movie.name}"`}></img>
       </a>
       <div className="card__element">
-        <p className="card__title">{movie.name}</p>
+        <h2 className="card__title">{movie.name}</h2>
         <div className="card__buttons">
           {moviesPage && !isSavedMovie && (
             <button
