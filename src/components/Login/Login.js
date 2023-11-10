@@ -3,11 +3,24 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../images/logo.svg';
 
-function Login({ user }) {
+function Login({ onLogin }) {
   const [errors, setErrors] = useState({});
+  const [isValid, setIsValid] = useState(false);
+  const [inputValues, setInputValues] = useState({});
+
   const handleInputChange = (evt) => {
-    setErrors({ ...errors, [evt.target.name]: evt.target.validationMessage });
+    const target = evt.target;
+    const name = target.name;
+    const value = target.value;
+    setErrors({ ...errors, [name]: target.validationMessage });
+    setIsValid(target.closest('form').checkValidity());
+    setInputValues({ ...inputValues, [name]: value });
   }
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
+    onLogin(inputValues.email, inputValues.password);
+  };
+
   return (
     <main>
       <section className="form">
@@ -16,7 +29,7 @@ function Login({ user }) {
             <img className="form__logo" src={logo} alt="Логотип Movies Explorer"></img>
           </Link>
           <h1 className="form__title">Рады видеть!</h1>
-          <form name="login" className="form__inputs">
+          <form name="login" className="form__inputs" onSubmit={handleSubmit}>
             <div className="form__items">
               <label className="form__item">
                 <p className="form__item-text">E-mail</p>
@@ -25,7 +38,7 @@ function Login({ user }) {
                   name="email"
                   type="email"
                   placeholder="Введите почту"
-                  value={user.email}
+                  value={inputValues.email || ''}
                   onChange={handleInputChange}
                   required
                 />
@@ -39,14 +52,14 @@ function Login({ user }) {
                   type="password"
                   minLength="6"
                   placeholder="Введите пароль"
-                  value={user.password}
+                  value={inputValues.password || ''}
                   onChange={handleInputChange}
                   required
                 />
                 <p className={`form__error ${errors.password ? 'form__error-display' : ''}`}>{errors.password}</p>
               </label>
             </div>
-            <button className="form__button"><Link className="form__button-link" to="/">Войти</Link></button>
+            <button className={`form__button ${isValid ? "" : "form__button_disabled"}`} type="submit" disabled={!isValid ? true : ''}>Войти</button>
           </form>
           <p className="form__text">Ещё не зарегистрированы?
             <Link to="/signup" className="form__link">Регистрация</Link>

@@ -6,6 +6,8 @@ import Navigation from '../Navigation/Navigation';
 
 const Header = ({ isLoggedIn }) => {
   const { pathname } = useLocation();
+  // const [menu, setMenu] = useState(false);
+
   return (
     <header className={`header ${pathname !== '/' ? '' : 'header_type_auth'}`}>
       <Link to="/" className="header__link">

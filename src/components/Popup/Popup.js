@@ -1,11 +1,11 @@
 import './Popup.css';
 
-const Popup = () => {
+const Popup = ({ title, isOpen, onClose }) => {
   return (
-    <section className='popup popup_opened'>
+    <section className={`popup ${isOpen ? 'popup_opened' : ''}`}>
       <div className="popup__container">
-        <p className="popup__text">Что-то пошло не так</p>
-        <button className="popup__close" type="button" />
+        <p className="popup__text">{title}</p>
+        <button className="popup__close" type="button" onClick={onClose} />
       </div>
     </section>
   );

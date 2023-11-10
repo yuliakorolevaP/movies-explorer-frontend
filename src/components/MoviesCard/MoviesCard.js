@@ -1,51 +1,57 @@
 import './MoviesCard.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
-const MoviesCard = ({ movie }) => {
+const MoviesCard = ({ film, savedMoviesToggle, filmsSaved }) => {
   const { pathname } = useLocation();
-  const moviesPage = pathname === "/movies";
-  const savedMoviesPage = pathname === "/saved-movies";
-  const [isSavedMovie, setSavedMovie] = useState(false);
-  const handleClickSaveMovie = () => {
-    setSavedMovie(!isSavedMovie);
-  };
+  const [favorite, setFavorite] = useState(false);
 
+  function handleFavoriteToogle() {
+    const newFavorite = !favorite;
+    const savedFilm = filmsSaved.filter((obj) => {
+      return obj.movieId === film.id;
+    });
+    savedMoviesToggle({ ...film, _id: savedFilm.length > 0 ? savedFilm[0]._id : null }, newFavorite);
+  }
+
+  function handleFavoriteDelete() {
+    savedMoviesToggle(film, false);
+  }
+
+  function getMovieDuration(mins) {
+    return `${Math.floor(mins / 60)}ч ${mins % 60}м`;
+  }
+
+  useEffect(() => {
+    if (pathname !== '/saved-movies') {
+      const savedFilm = filmsSaved.filter((obj) => {
+        return obj.movieId === film.id;
+      });
+
+      if (savedFilm.length > 0) {
+        setFavorite(true);
+      } else {
+        setFavorite(false);
+      }
+    }
+  }, [pathname, filmsSaved, film.id]);
   return (
     <li className="card">
-      <a className="card__image-content" href={movie.trailerLink}
-        target="_blank"
-        rel="noreferrer">
-        <img className="card__image"
-          src={movie.link}
-          alt={`Заставка для фильма "${movie.name}"`}></img>
+      <a className="card__image-content" href={pathname === '/saved-movies' ? film.trailer : film.trailerLink} target="_blank" rel="noreferrer">
+        <img className="card__image" src={pathname === '/saved-movies' ? `${film.image}` : `https://api.nomoreparties.co${film.image.url}`} alt={film.nameRU}></img>
       </a>
       <div className="card__element">
-        <h2 className="card__title">{movie.name}</h2>
+        <p className="card__title">{film.nameRU}</p>
         <div className="card__buttons">
-          {moviesPage && !isSavedMovie && (
-            <button
-              className="card__button card__button_active"
-              type="button"
-              onClick={handleClickSaveMovie}>
-            </button>
+          {pathname === '/saved-movies' ? (
+            <button type="button" className="card__button card__button_delete" onClick={handleFavoriteDelete} />
+          ) : (
+            <button type="button" className={`card__button card__button${favorite ? '_active' : '_inactive'}`} onClick={handleFavoriteToogle} />
           )}
-          {isSavedMovie && (
-            <button
-              className="card__button card__button_inactive"
-              type="button"
-              onClick={handleClickSaveMovie}>
-            </button>
-          )}
-          {savedMoviesPage && (
-            <button
-              className="card__button card__button_delete"
-              type="button">
-            </button>
-          )}
+
         </div>
       </div>
-      <p className="card__duration">{movie.duration}</p>
+      <p className="card__duration">{getMovieDuration(film.duration)}</p>
     </li>
   );
 };

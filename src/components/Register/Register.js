@@ -3,12 +3,23 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../images/logo.svg';
 
-function Register({ user }) {
+function Register({ onRegister }) {
   const [errors, setErrors] = useState({});
+  const [inputValues, setInputValues] = useState({});
+  const [isValid, setIsValid] = useState(false);
   const handleInputChange = (evt) => {
+    const target = evt.target;
+    const name = target.name;
+    const value = target.value;
     setErrors({ ...errors, [evt.target.name]: evt.target.validationMessage });
+    setInputValues({ ...inputValues, [name]: value });
+    setIsValid(target.closest('form').checkValidity());
   }
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
 
+    onRegister(inputValues.name, inputValues.email, inputValues.password);
+  };
   return (
     <main>
       <section className="form">
@@ -17,14 +28,14 @@ function Register({ user }) {
             <img className="form__logo" src={logo} alt="Логотип Movies Explorer"></img>
           </Link>
           <h1 className="form__title">Добро пожаловать!</h1>
-          <form name="register" className="form__inputs" >
+          <form name="register" className="form__inputs" onSubmit={handleSubmit} >
             <div className="form__items">
               <label className="form__item">
                 <p className="form__item-text">Имя</p>
                 <input className="form__field"
                   name="name"
                   placeholder="Введите имя"
-                  // value={user.name}
+                  value={inputValues.name || ''}
                   onChange={handleInputChange}
                   required
                 />
@@ -37,7 +48,7 @@ function Register({ user }) {
                   name="email"
                   type="email"
                   placeholder="Введите почту"
-                  // value={user.email}
+                  value={inputValues.email || ''}
                   onChange={handleInputChange}
                   required
                 />
@@ -51,14 +62,14 @@ function Register({ user }) {
                   type="password"
                   minLength="6"
                   placeholder="Введите пароль"
-                  // value={user.password}
+                  value={inputValues.password || ''}
                   onChange={handleInputChange}
                   required
                 />
                 <p className={`form__error ${errors.password ? 'form__error-display' : ''}`}>{errors.password}</p>
               </label>
             </div>
-            <button className="form__button" type="submit">Зарегистрироваться</button>
+            <button className={`form__button ${isValid ? "" : "form__button_disabled"}`} type="submit">Зарегистрироваться</button>
           </form>
           <p className="form__text">Уже зарегистрированы?
             <Link to="/signin" className="form__link">Войти</Link>
