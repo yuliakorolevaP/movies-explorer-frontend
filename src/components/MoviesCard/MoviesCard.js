@@ -41,7 +41,7 @@ const MoviesCard = ({ film, savedMoviesToggle, filmsSaved }) => {
         <img className="card__image" src={pathname === '/saved-movies' ? `${film.image}` : `https://api.nomoreparties.co${film.image.url}`} alt={film.nameRU}></img>
       </a>
       <div className="card__element">
-        <p className="card__title">{film.nameRU}</p>
+        <h2 className="card__title">{film.nameRU}</h2>
         <div className="card__buttons">
           {pathname === '/saved-movies' ? (
             <button type="button" className="card__button card__button_delete" onClick={handleFavoriteDelete} />
