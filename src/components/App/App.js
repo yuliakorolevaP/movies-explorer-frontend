@@ -86,7 +86,7 @@ function App() {
       .catch((err) => {
         setLoggedIn(false);
         setInfoTooltip(true);
-        setInfoText("Но");
+        setInfoText("Ошибка, попробуйте снова");
         console.error(err);
       })
       .finally(() => setLoading(false));
@@ -104,7 +104,7 @@ function App() {
       })
       .catch((err) => {
         setInfoTooltip(true);
-        setInfoText("Но");
+        setInfoText("Ошибка, попробуйте снова");
         console.error(err);
       })
       .finally(() => setLoading(false));

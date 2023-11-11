@@ -97,7 +97,7 @@ const Movies = ({ openPopup }) => {
     let filterDataShowed = [];
     let filterData = [];
     if (filmsShowed === null) {
-      return openPopup("Сначала нужно найти фильмы:)")
+      return openPopup("Сначала нужно найти фильмы")
     } else {
       if (tumbler) {
         setFilmsShowedWithTumbler(filmsShowed);
