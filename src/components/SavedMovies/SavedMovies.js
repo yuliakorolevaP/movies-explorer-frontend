@@ -4,9 +4,8 @@ import MoviesCardList from '../MoviesCardList/MoviesCardList';
 import { useEffect, useState } from 'react';
 import { deleteMovies, getsMovies } from "../../utils/MainApi";
 import Preloader from '../Preloader/Preloader';
-import { getMovies } from "../../utils/MoviesApi";
 
-const SavedMovies = (openPopup) => {
+const SavedMovies = ({ openPopup }) => {
   const [films, setFilms] = useState(null);
   const [preloader, setPreloader] = useState(false);
   const [errorText, setErrorText] = useState('');
@@ -15,36 +14,22 @@ const SavedMovies = (openPopup) => {
   const [filmsShowed, setFilmsShowed] = useState([]);
   const [filmsShowedWithTumbler, setFilmsShowedWithTumbler] = useState([]);
   const [filmsWithTumbler, setFilmsWithTumbler] = useState([]);
-
   async function handleGetMovies(inputSearch, tumbler) {
     setErrorText('');
     setPreloader(true);
     try {
       const data = films;
       let filterData = data.filter(({ nameRU }) => nameRU.toLowerCase().includes(inputSearch.toLowerCase()));
-
       if (tumbler) filterData = filterData.filter(({ duration }) => duration <= 40);
-
       setFilmsShowed(filterData);
-
       if (inputSearch) {
-        localStorage.setItem('savedFilms', JSON.stringify(filterData));
-        localStorage.setItem('savedFilmsTumbler', tumbler);
-        localStorage.setItem('savedFilmsInputSearch', inputSearch);
       } else {
-        localStorage.removeItem('savedFilms');
-        localStorage.removeItem('savedFilmsTumbler');
-        localStorage.removeItem('savedFilmsInputSearch');
       }
     } catch (err) {
-      setErrorText(
+      openPopup(
         'Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз'
       );
-
       setFilms([]);
-      localStorage.removeItem('savedFilms');
-      localStorage.removeItem('savedFilmsTumbler');
-      localStorage.removeItem('savedFilmsInputSearch');
     } finally {
       setPreloader(false);
     }
@@ -54,12 +39,11 @@ const SavedMovies = (openPopup) => {
     if (!favorite) {
       try {
         await deleteMovies(film._id);
-        const newFilms = await getMovies();
+        const newFilms = await getsMovies();
         setFilmsShowed(newFilms);
         setFilms(newFilms);
       } catch (err) {
         openPopup('Во время удаления фильма произошла ошибка.');
-        console.log("xzxzx");
       }
     }
   }
@@ -68,7 +52,7 @@ const SavedMovies = (openPopup) => {
     let filterDataShowed = [];
     let filterData = [];
     if (filmsShowed === null) {
-      return openPopup("Сначала нужно найти фильмы:)")
+      return openPopup("Сначала нужно найти фильмы")
     } else {
       if (tumbler) {
         setFilmsShowedWithTumbler(filmsShowed);
@@ -81,7 +65,6 @@ const SavedMovies = (openPopup) => {
         filterData = filmsWithTumbler;
       }
       localStorage.setItem('savedFilms', JSON.stringify(filterDataShowed.concat(filterData)));
-      localStorage.setItem('savedFilmsTumbler', tumbler);
       setFilmsShowed(filterDataShowed);
       setFilms(filterData);
     }
@@ -89,31 +72,16 @@ const SavedMovies = (openPopup) => {
 
   useEffect(() => {
     const asyncFn = async () => {
-      const localStorageFilms = localStorage.getItem('savedFilms');
-      if (localStorageFilms) {
-        setFilms(JSON.parse(localStorageFilms));
-        const localStorageFilmsTumbler = localStorage.getItem('savedFilmsTumbler');
-        const localStorageFilmsInputSearch = localStorage.getItem('savedFilmsInputSearch');
-
-        if (localStorageFilmsTumbler) {
-          setFilmsTumbler(localStorageFilmsTumbler === 'true');
-        }
-        if (localStorageFilmsInputSearch) {
-          setFilmsInputSearch(localStorageFilmsInputSearch);
-        }
-      } else {
-        try {
-          const data = await getsMovies();
-          setFilms(data);
-          setFilmsShowed(data);
-        } catch (err) {
-          openPopup(`Ошибка сервера ${err}`);
-          console.log("xzxzx");
-        }
+      try {
+        const data = await getsMovies();
+        setFilms(data);
+        setFilmsShowed(data);
+      } catch (err) {
+        openPopup(`Ошибка сервера ${err}`);
       }
     };
     asyncFn();
-  }, []);
+  }, [openPopup]);
   return (
     <main>
       <div className="saved-movies">

@@ -1,6 +1,6 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import Header from '../Header/Header';
 import Main from '../Main/Main';
 import Footer from '../Footer/Footer';
@@ -14,6 +14,8 @@ import { register, login, getsUserInfo, updateUserInfo, checkToken } from "../..
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import ProtectedRouteElement from '../ProtectedRouteElement/ProtectedRouteElement.js';
 import Popup from '../Popup/Popup';
+import Preloader from '../Preloader/Preloader';
+
 function App() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -30,15 +32,15 @@ function App() {
     pathname === "/profile";
 
   useEffect(() => {
-    const jwt = localStorage.getItem('jwt');
     if (isLoggedIn) {
-      checkToken(jwt)
+      checkToken(localStorage.getItem('jwt'))
         .then((dataUser) => {
           setCurrentUser(dataUser);
         })
         .catch((err) => {
           console.log(err);
-        });
+          return onSignOut();
+        })
     }
   }, [isLoggedIn]);
 
@@ -60,15 +62,16 @@ function App() {
 
 
   const handleUpdateUser = (newUserInfo) => {
+    setLoading(true);
     updateUserInfo(newUserInfo)
       .then((data) => {
         setCurrentUser(data);
         setInfoTooltip(true);
-          setInfoText("Данные успешно обновлены");
+        setInfoText("Данные успешно обновлены");
       })
       .catch((err) => {
         console.log(`Ошибка: ${err}`);
-      })
+      }).finally(() => setLoading(false));
   }
 
   function handleLogin(email, password) {
@@ -123,7 +126,6 @@ function App() {
     localStorage.clear();
     setCurrentUser({});
     console.log(isLoggedIn);
-
   }
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -138,11 +140,11 @@ function App() {
           <Route path="/saved-movies" element={<ProtectedRouteElement isLoggedIn={isLoggedIn}
             element={SavedMovies}
           />} />
-          <Route path="/profile" element={<ProtectedRouteElement isLoggedIn={isLoggedIn} onUpdate={handleUpdateUser}
+          <Route path="/profile" element={<ProtectedRouteElement isLoggedIn={isLoggedIn} onUpdate={handleUpdateUser} isLoading={isLoading}
             element={Profile}
             onSignOut={onSignOut} />} />
-          <Route path="/signup" element={<Register onRegister={handleRegister} />} />
-          <Route path="/signin" element={<Login onLogin={handleLogin} />} />
+          <Route path="/signup" element={isLoading ? <Preloader /> : !isLoggedIn ? <Register onRegister={handleRegister} isLoading={isLoading} /> : <Navigate to="/" />} />
+          <Route path="/signin" element={isLoading ? <Preloader /> : !isLoggedIn ? <Login onLogin={handleLogin} isLoading={isLoading} /> : <Navigate to="/" />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
         <Popup title={infoText} isOpen={infoTooltip} onClose={PopupClose} />

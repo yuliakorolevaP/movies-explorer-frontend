@@ -18,7 +18,9 @@ const SearchForm = ({ handlegetsMovies, filmsTumbler, filmsInputSearch, handleGe
   function handleSubmit(evt) {
     evt.preventDefault();
     handlegetsMovies(inputSearch);
+    setTumbler(false);
   }
+
 
   useEffect(() => {
     setTumbler(filmsTumbler);
@@ -33,7 +35,7 @@ const SearchForm = ({ handlegetsMovies, filmsTumbler, filmsInputSearch, handleGe
         <button type="submit" className="search__button" onClick={handleSubmit}>Найти</button>
       </div>
       <div className="search__toggle">
-        <label className="search__tumbler">
+        <label className='search__tumbler'>
           <input className="search__checkbox" type="checkbox" id="checkbox"
             value={tumbler} checked={tumbler} onChange={handleTumblerChange}
           />

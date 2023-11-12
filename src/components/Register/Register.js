@@ -2,8 +2,9 @@ import '../Form/Form.css';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../images/logo.svg';
+import { EMAIL_REG } from '../../utils/constants';
 
-function Register({ onRegister }) {
+function Register({ onRegister, isLoading }) {
   const [errors, setErrors] = useState({});
   const [inputValues, setInputValues] = useState({});
   const [isValid, setIsValid] = useState(false);
@@ -38,6 +39,7 @@ function Register({ onRegister }) {
                   value={inputValues.name || ''}
                   onChange={handleInputChange}
                   required
+                  disabled={isLoading}
                 />
                 <p className="form__error">Что-то пошло не так...</p>
               </label>
@@ -47,9 +49,11 @@ function Register({ onRegister }) {
                   className="form__field"
                   name="email"
                   type="email"
+                  pattern={EMAIL_REG}
                   placeholder="Введите почту"
                   value={inputValues.email || ''}
                   onChange={handleInputChange}
+                  disabled={isLoading}
                   required
                 />
                 <p className={`form__error ${errors.email ? 'form__error-display' : ''}`}>{errors.email}</p>
@@ -64,12 +68,13 @@ function Register({ onRegister }) {
                   placeholder="Введите пароль"
                   value={inputValues.password || ''}
                   onChange={handleInputChange}
+                  disabled={isLoading}
                   required
                 />
                 <p className={`form__error ${errors.password ? 'form__error-display' : ''}`}>{errors.password}</p>
               </label>
             </div>
-            <button className={`form__button ${isValid ? "" : "form__button_disabled"}`} type="submit">Зарегистрироваться</button>
+            <button className={`form__button ${isValid || isLoading ? "" : "form__button_disabled"}`} type="submit">Зарегистрироваться</button>
           </form>
           <p className="form__text">Уже зарегистрированы?
             <Link to="/signin" className="form__link">Войти</Link>

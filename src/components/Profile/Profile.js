@@ -2,8 +2,9 @@ import './Profile.css';
 import { Link } from 'react-router-dom';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import { useState, useContext } from 'react';
+import { EMAIL_REG } from '../../utils/constants';
 
-const Profile = ({ onSignOut, onUpdate }) => {
+const Profile = ({ onSignOut, onUpdate, isLoading }) => {
   const currentUser = useContext(CurrentUserContext);
   const [errors, setErrors] = useState({});
   const [isVisibleButton, setVisibleButton] = useState(false);
@@ -59,14 +60,17 @@ const Profile = ({ onSignOut, onUpdate }) => {
             <input className="profile__settings"
               name="name"
               value={!isEditingName ? (currentUser.name) : (name || "")}
-              onChange={handleNameChange} />
+              onChange={handleNameChange}
+              disabled={isLoading} />
           </div>
           <div className="profile__area profile__area_type_email">
             <input className="profile__settings"
+              pattern={EMAIL_REG}
               name="email"
               type="email"
               value={!isEditingProfile ? (currentUser.email) : (email || "")}
               onChange={handleEmailChange}
+              disabled={isLoading}
             />
             <span className={`profile__error ${errors.email ? 'profile__error-display' : ''}`}>{errors.email}</span>
           </div>
@@ -77,12 +81,12 @@ const Profile = ({ onSignOut, onUpdate }) => {
           </button>
         )}
         {!isVisibleButton && (
-          <Link to="/signin" className="profile__link" onClick={onSignOut}>
+          <Link to="/" className="profile__link" onClick={onSignOut}>
             Выйти из аккаунта
           </Link>
         )}
         {isVisibleButton && (
-          <button className="profile__button profile__button_save" type="submit" onClick={EditingProfile}>Сохранить
+          <button className="profile__button profile__button_save" disabled={isLoading} type="submit" onClick={EditingProfile}>Сохранить
           </button>
         )}
       </form>

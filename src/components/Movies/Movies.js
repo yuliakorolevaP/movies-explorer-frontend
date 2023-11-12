@@ -17,7 +17,6 @@ const Movies = ({ openPopup }) => {
   const [filmsShowed, setFilmsShowed] = useState(null);
   const [filmsWithTumbler, setFilmsWithTumbler] = useState([]);
   const [filmsShowedWithTumbler, setFilmsShowedWithTumbler] = useState([]);
-
   useEffect(() => {
     setMoviesCount(getMoviesCount());
     const handlerResize = () => setMoviesCount(getMoviesCount());
@@ -35,7 +34,7 @@ const Movies = ({ openPopup }) => {
       '1270': [16, 4],
       '987': [9, 3],
       '739': [8, 2],
-      '240': [5, 1],
+      '230': [5, 2],
     };
 
     Object.keys(MoviesCountConfig)
@@ -56,48 +55,53 @@ const Movies = ({ openPopup }) => {
     setFilms(spliceFilms);
   }
 
-  async function handlegetsMovies(inputSearch) {
-    setFilmsTumbler(false);
-    localStorage.setItem('filmsTumbler', false);
-
-    if (!inputSearch) {
-      setErrorText('Нужно ввести ключевое слово');
+  function handlegetsMovies(inputSearch, search) {
+    if (!search) {
+      openPopup('Нужно ввести ключевое слово');
       return false;
     }
+    let filterData = inputSearch.filter(({ nameRU }) => nameRU.toLowerCase().includes(search.toLowerCase()));
+    localStorage.setItem('films', JSON.stringify(filterData));
+    localStorage.setItem('filmsInputSearch', search);
+    const spliceData = filterData.splice(0, MoviesCount[0]);
+    setFilmsShowed(spliceData);
+    setFilms(filterData);
+    setFilmsShowedWithTumbler(spliceData);
+    setFilmsWithTumbler(filterData);
+  }
 
-    setErrorText('');
-    setPreloader(true);
-
+  async function handleSubmitSearch(search) {
+    setFilmsTumbler(false);
+    localStorage.setItem('filmsTumbler', false);
     try {
-      const data = await getMovies();
-      let filterData = data.filter(({ nameRU }) => nameRU.toLowerCase().includes(inputSearch.toLowerCase()));
-      localStorage.setItem('films', JSON.stringify(filterData));
-      localStorage.setItem('filmsInputSearch', inputSearch);
-
-      const spliceData = filterData.splice(0, MoviesCount[0]);
-      setFilmsShowed(spliceData);
-      setFilms(filterData);
-      setFilmsShowedWithTumbler(spliceData);
-      setFilmsWithTumbler(filterData);
+      const allMovies = localStorage.getItem("allMovies");
+      if (!allMovies) {
+        setErrorText('');
+        setPreloader(true);
+        await getMovies()
+          .then((dataMovies) => {
+            localStorage.setItem("allMovies", JSON.stringify(dataMovies));
+            handlegetsMovies(dataMovies, search);
+          })
+      }
+      else {
+        handlegetsMovies(JSON.parse(allMovies), search);
+      }
     } catch (err) {
-      setErrorText(
-        'Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз'
+      openPopup('Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз'
       );
-
-      setFilms([]);
-      localStorage.removeItem('films');
-      localStorage.removeItem('filmsTumbler');
-      localStorage.removeItem('filmsInputSearch');
     } finally {
       setPreloader(false);
     }
+
   }
+
 
   async function handleGetMoviesTumbler(tumbler) {
     let filterDataShowed = [];
     let filterData = [];
-    if (filmsShowed === null) {
-      return openPopup("Сначала нужно найти фильмы")
+    if (films === null) {
+      openPopup("Сначала нужно найти фильмы")
     } else {
       if (tumbler) {
         setFilmsShowedWithTumbler(filmsShowed);
@@ -133,8 +137,6 @@ const Movies = ({ openPopup }) => {
       };
       try {
         await addMovies(objFilm);
-        const newSaved = await getsMovies();
-        setFilmsSaved(newSaved);
       } catch (err) {
         console.error(err);
         openPopup('Во время добавления фильма произошла ошибка.');
@@ -142,13 +144,13 @@ const Movies = ({ openPopup }) => {
     } else {
       try {
         await deleteMovies(film._id);
-        const newSaved = await getsMovies();
-        setFilmsSaved(newSaved);
       } catch (err) {
         console.error(err);
         openPopup('Во время удаления фильма произошла ошибка.');
       }
     }
+    const newSaved = await getsMovies();
+    setFilmsSaved(newSaved);
   }
 
   useEffect(() => {
@@ -185,7 +187,7 @@ const Movies = ({ openPopup }) => {
   return (
     <main>
       <div className="movies">
-        <SearchForm handlegetsMovies={handlegetsMovies} filmsTumbler={filmsTumbler} filmsInputSearch={filmsInputSearch} handleGetMoviesTumbler={handleGetMoviesTumbler}
+        <SearchForm handlegetsMovies={handleSubmitSearch} filmsTumbler={filmsTumbler} filmsInputSearch={filmsInputSearch} handleGetMoviesTumbler={handleGetMoviesTumbler}
         />
         {preloader && <Preloader />}
         {errorText && <div className="movies__text-error">{errorText}</div>}
