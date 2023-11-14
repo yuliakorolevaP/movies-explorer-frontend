@@ -24,6 +24,8 @@ function App() {
   const [isLoading, setLoading] = useState(false);
   const [infoText, setInfoText] = useState("");
   const [infoTooltip, setInfoTooltip] = useState(false);
+  const [check, setCheck] = useState(false);
+
   const footer = pathname === "/" || pathname === "/movies" || pathname === "/saved-movies";
   const header =
     pathname === "/" ||
@@ -45,22 +47,33 @@ function App() {
   }, [isLoggedIn]);
 
   useEffect(() => {
-    const jwt = localStorage.getItem('jwt');
+    const jwt = localStorage.getItem('jwt')
     if (jwt) {
-      getsUserInfo()
-        .then((res) => {
-          if (res) {
-            setLoggedIn(true);
-          }
+      tokenCheck(jwt)
+      getsUserInfo().then((res) => {
+        if (res) {
+          setLoggedIn(true);
+        }
+      })
+        .catch((err) => {
+          console.log(err);
         })
-        .catch(console.error);
     } else {
-      setLoggedIn(false);
-      localStorage.clear();
+      return onSignOut();
     }
   }, []);
 
-
+  function tokenCheck(token) {
+    checkToken(token).then(() => {
+      console.log(true);
+    }).catch((err) => {
+      onSignOut();
+      console.log(err);
+      setInfoTooltip(true);
+      setInfoText('Проблемы с токеном, повторите попытку входа');
+      navigate('/', { replace: true });
+    })
+  }
   const handleUpdateUser = (newUserInfo) => {
     setLoading(true);
     updateUserInfo(newUserInfo)
@@ -138,7 +151,7 @@ function App() {
               element={Movies} openPopup={openPopup} isLoading={isLoading}
             />} />
           <Route path="/saved-movies" element={<ProtectedRouteElement isLoggedIn={isLoggedIn}
-            element={SavedMovies}
+            element={SavedMovies} openPopup={openPopup}
           />} />
           <Route path="/profile" element={<ProtectedRouteElement isLoggedIn={isLoggedIn} onUpdate={handleUpdateUser} isLoading={isLoading}
             element={Profile}

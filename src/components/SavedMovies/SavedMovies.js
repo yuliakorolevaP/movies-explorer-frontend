@@ -35,16 +35,17 @@ const SavedMovies = ({ openPopup }) => {
     }
   }
 
-  async function savedMoviesToggle(film, favorite) {
+  function savedMoviesToggle(films, favorite) {
     if (!favorite) {
-      try {
-        await deleteMovies(film._id);
-        const newFilms = await getsMovies();
-        setFilmsShowed(newFilms);
-        setFilms(newFilms);
-      } catch (err) {
-        openPopup('Во время удаления фильма произошла ошибка.');
-      }
+      const fimId = films._id;
+      deleteMovies(films._id)
+        .then(() => {
+          setFilms((films) => films.filter((film) => film._id !== fimId));
+          setFilmsShowed((films) => films.filter((film) => film._id !== fimId));
+        })
+        .catch((err) => {
+          console.log(`Ошибка: ${err}`);
+        });
     }
   }
 

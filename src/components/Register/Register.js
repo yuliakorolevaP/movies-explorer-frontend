@@ -12,13 +12,12 @@ function Register({ onRegister, isLoading }) {
     const target = evt.target;
     const name = target.name;
     const value = target.value;
+    setIsValid(target.closest('form').checkValidity());
     setErrors({ ...errors, [evt.target.name]: evt.target.validationMessage });
     setInputValues({ ...inputValues, [name]: value });
-    setIsValid(target.closest('form').checkValidity());
   }
   const handleSubmit = (evt) => {
     evt.preventDefault();
-
     onRegister(inputValues.name, inputValues.email, inputValues.password);
   };
   return (

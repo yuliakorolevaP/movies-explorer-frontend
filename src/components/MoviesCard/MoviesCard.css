@@ -51,6 +51,9 @@
   background: #f9f9f9 url(../../images/icon-saved-inactive.svg) center no-repeat;
 }
 
+/* .card:hover #card__button {
+  background: #f9f9f9 url(../../images/icon-saved-active.svg) center no-repeat;
+} */
 .card__button_active {
   background: #f9f9f9 url(../../images/icon-saved-active.svg) center no-repeat;
 }
@@ -60,9 +63,12 @@
   height: 16px;
 }
 
-.card__button_delete:hover {
-  background: #f9f9f9 url(../../images/icon-saved-delete.svg) center no-repeat;
+.card:hover {
+  .card__button_delete {
+    background: #f9f9f9 url(../../images/icon-saved-delete.svg) center no-repeat;
+  }
 }
+
 
 .card__duration {
   margin: 0.4px 0 14.5px;

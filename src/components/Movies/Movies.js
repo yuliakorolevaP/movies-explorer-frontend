@@ -17,6 +17,7 @@ const Movies = ({ openPopup }) => {
   const [filmsShowed, setFilmsShowed] = useState(null);
   const [filmsWithTumbler, setFilmsWithTumbler] = useState([]);
   const [filmsShowedWithTumbler, setFilmsShowedWithTumbler] = useState([]);
+
   useEffect(() => {
     setMoviesCount(getMoviesCount());
     const handlerResize = () => setMoviesCount(getMoviesCount());
@@ -55,11 +56,12 @@ const Movies = ({ openPopup }) => {
     setFilms(spliceFilms);
   }
 
-  function handlegetsMovies(inputSearch, search) {
+  function handlegetsMovies(inputSearch, search, tumbler) {
     if (!search) {
       openPopup('Нужно ввести ключевое слово');
       return false;
     }
+    setFilmsInputSearch(search);
     let filterData = inputSearch.filter(({ nameRU }) => nameRU.toLowerCase().includes(search.toLowerCase()));
     localStorage.setItem('films', JSON.stringify(filterData));
     localStorage.setItem('filmsInputSearch', search);
@@ -68,11 +70,21 @@ const Movies = ({ openPopup }) => {
     setFilms(filterData);
     setFilmsShowedWithTumbler(spliceData);
     setFilmsWithTumbler(filterData);
+    if (tumbler) {
+      let filterDataShowed = spliceData.filter(({ duration }) => duration <= 40);
+      let data = filterData.filter(({ duration }) => duration <= 40);
+      localStorage.setItem('films', JSON.stringify(filterDataShowed.concat(data)));
+      localStorage.setItem('filmsTumbler', tumbler);
+      setFilmsShowed(filterDataShowed);
+      setFilms(data);
+    }
+    if (!tumbler) {
+      setFilmsTumbler(false);
+      localStorage.setItem('filmsTumbler', false);
+    }
   }
 
-  async function handleSubmitSearch(search) {
-    setFilmsTumbler(false);
-    localStorage.setItem('filmsTumbler', false);
+  async function handleSubmitSearch(search, tumbler) {
     try {
       const allMovies = localStorage.getItem("allMovies");
       if (!allMovies) {
@@ -81,11 +93,11 @@ const Movies = ({ openPopup }) => {
         await getMovies()
           .then((dataMovies) => {
             localStorage.setItem("allMovies", JSON.stringify(dataMovies));
-            handlegetsMovies(dataMovies, search);
+            handlegetsMovies(dataMovies, search, tumbler);
           })
       }
       else {
-        handlegetsMovies(JSON.parse(allMovies), search);
+        handlegetsMovies(JSON.parse(allMovies), search, tumbler);
       }
     } catch (err) {
       openPopup('Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз'
@@ -96,19 +108,21 @@ const Movies = ({ openPopup }) => {
 
   }
 
-
-  async function handleGetMoviesTumbler(tumbler) {
+  function handleGetMoviesTumbler(tumbler) {
     let filterDataShowed = [];
     let filterData = [];
     if (films === null) {
+      setFilmsTumbler(true);
+      localStorage.setItem('filmsTumbler', true);
       openPopup("Сначала нужно найти фильмы")
     } else {
+      localStorage.removeItem('films');
       if (tumbler) {
+        setFilmsTumbler(true);
         setFilmsShowedWithTumbler(filmsShowed);
         setFilmsWithTumbler(films);
         filterDataShowed = filmsShowed.filter(({ duration }) => duration <= 40);
         filterData = films.filter(({ duration }) => duration <= 40);
-
       } else {
         filterDataShowed = filmsShowedWithTumbler;
         filterData = filmsWithTumbler;
@@ -136,7 +150,8 @@ const Movies = ({ openPopup }) => {
         nameEN: film.nameEN,
       };
       try {
-        await addMovies(objFilm);
+        const savedMovie = await addMovies(objFilm);
+        setFilmsSaved([savedMovie, ...filmsSaved]);
       } catch (err) {
         console.error(err);
         openPopup('Во время добавления фильма произошла ошибка.');
@@ -144,13 +159,13 @@ const Movies = ({ openPopup }) => {
     } else {
       try {
         await deleteMovies(film._id);
+        const filteredMovies = filmsSaved.filter((movie) => movie._id !== film._id);
+        setFilmsSaved(filteredMovies);
       } catch (err) {
         console.error(err);
         openPopup('Во время удаления фильма произошла ошибка.');
       }
     }
-    const newSaved = await getsMovies();
-    setFilmsSaved(newSaved);
   }
 
   useEffect(() => {

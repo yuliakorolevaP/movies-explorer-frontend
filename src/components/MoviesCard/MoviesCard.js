@@ -27,7 +27,6 @@ const MoviesCard = ({ film, savedMoviesToggle, filmsSaved }) => {
       const savedFilm = filmsSaved.filter((obj) => {
         return obj.movieId === film.id;
       });
-
       if (savedFilm.length > 0) {
         setFavorite(true);
       } else {
@@ -48,7 +47,6 @@ const MoviesCard = ({ film, savedMoviesToggle, filmsSaved }) => {
           ) : (
             <button type="button" className={`card__button card__button${favorite ? '_active' : '_inactive'}`} onClick={handleFavoriteToogle} />
           )}
-
         </div>
       </div>
       <p className="card__duration">{getMovieDuration(film.duration)}</p>
